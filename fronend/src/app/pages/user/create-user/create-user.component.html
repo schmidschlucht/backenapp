@@ -1,0 +1,7 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <input placeholder="user_firstname" formControlName="user_firstname">
+  <br><input placeholder="user_lastname" formControlName="user_lastname">
+  <br><input placeholder="user_email" formControlName="user_email">
+  <br>
+  <button type="submit">Speichern</button>
+</form>

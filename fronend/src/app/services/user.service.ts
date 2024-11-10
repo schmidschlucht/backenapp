@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {catchError, Observable, throwError} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,13 @@ export class UserService {
   constructor(private httpClient: HttpClient) { }
 
   allUser(): Observable<User[]> {
-    return this.httpClient.get('/api/users') as Observable<User[]>;
+    return this.httpClient.get('/api/user')
+      .pipe(
+    // @ts-ignore
+        catchError((httpErrorResponse: HttpErrorResponse) => {
+          return throwError(() => new Error('User konnten nicht geladen werden.'));
+        })
+      );
   }
 }
 
