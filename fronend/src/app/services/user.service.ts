@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {catchError, Observable, throwError} from 'rxjs';
+import {catchError, Observable, retry, retryWhen, throwError, timer} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +12,20 @@ export class UserService {
   allUser(): Observable<User[]> {
     return this.httpClient.get('/api/user')
       .pipe(
-    // @ts-ignore
-        catchError((httpErrorResponse: HttpErrorResponse) => {
-          return throwError(() => new Error('User konnten nicht geladen werden.'));
+        retry({
+          count: 3,
+          delay: ((error: HttpErrorResponse, retryCount: number) => {
+            console.log(error, retryCount);
+            return timer(1000)
+          }),
         })
-      );
+      )
+      // @ts-ignore
+      .catchError((httpErrorResponse: HttpErrorResponse) => {
+        return throwError(() => new Error('User konnten nicht geladen werden.'));
+      }) as Observable<User[]>;
   }
+
 }
 
 export interface User {
